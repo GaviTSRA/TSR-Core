@@ -1,0 +1,33 @@
+apply plugin: "java"
+
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories{
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+    maven{ url 'https://www.jitpack.io' }
+}
+
+ext{
+    //the build number that this plugin is made for
+    mindustryVersion = 'v126.2'
+}
+
+dependencies{
+    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    //implementation fileTree(dir: 'libs', includes: ['*.jar'])
+    //implementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    //implementation name: "arc-core:$mindustryVersion"
+}
+
+jar{
+    archiveFileName = "${project.archivesBaseName}.jar"
+    from{
+        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+    }
+}
