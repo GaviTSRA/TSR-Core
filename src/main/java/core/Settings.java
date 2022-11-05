@@ -2,6 +2,7 @@ package core;
 
 import arc.files.Fi;
 import arc.struct.ObjectMap;
+import arc.util.Log;
 import arc.util.io.PropertiesUtils;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class Settings {
 
     /**
      * <p>Create a new settings object.</p>
-     * <p>The file and directories are automatically created if they are not present.</p>
+     * <p>The file is automatically created if it is not present.</p>
      * <p>The data is loaded automatically.</p>
      * @param path The path of the settings file
      */
@@ -21,13 +22,11 @@ public class Settings {
         settings = new ObjectMap<>();
         settingsFile = new Fi(path);
         if (!settingsFile.exists()) {
-            settingsFile.mkdirs();
             File file = new File(path);
             try {
                 file.createNewFile();
             } catch(IOException err) {
-                System.out.println("Error creating settings file: ");
-                System.out.println(err.getLocalizedMessage());
+                Log.err("Error creating settings file", err);
             }
         }
         load();
@@ -42,9 +41,8 @@ public class Settings {
         settings.put(key, value);
         try {
             PropertiesUtils.store(settings, settingsFile.writer(false), "");
-        } catch (IOException ex) {
-            System.out.println("Error saving settings: ");
-            System.out.println(ex.getLocalizedMessage());
+        } catch (IOException err) {
+            Log.err("Error saving settings", err);
         }
     }
 
