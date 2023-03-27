@@ -28,19 +28,17 @@ jar{
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = group
-            artifactId = 'library'
-            version = version
 
-            from components.java
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = group
+                artifactId = 'library'
+                version = version
+
+                from components.java
+            }
         }
     }
-}
-
-wrapper {
-    gradleVersion = "7.1"
-    distributionType = Wrapper.DistributionType.ALL
 }
