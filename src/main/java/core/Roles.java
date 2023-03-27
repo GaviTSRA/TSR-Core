@@ -13,13 +13,35 @@ import java.util.List;
 import java.util.Objects;
 
 public class Roles {
-    private final List<Role> roles;
+    private List<Role> roles;
+    public String path;
 
     /**
      * <p>Create a new Roles object and load the data from the specified file</p>
      * @param path The file that stores the role data. Created and loaded automatically
      */
     public Roles(String path) {
+        this.path = path;
+        Fi dataFile = new Fi(path);
+        if (!dataFile.exists()) {
+            File file = new File(path);
+            try {
+                file.createNewFile();
+                ObjectMap<String, String> default_role = new ObjectMap<>();
+                default_role.put("default.id", "0");
+                default_role.put("default.permissionLevel", "0");
+                default_role.put("default.name", "Player");
+                default_role.put("default.admin", "false");
+                PropertiesUtils.store(default_role, dataFile.writer(false), "See below for a default role. You need to add your own here!");
+            } catch(IOException err) {
+                Log.err("Error creating roles file", err);
+            }
+        }
+        load();
+    }
+
+    public void load() {
+        Fi dataFile = new Fi(path);
         roles = new ArrayList<>();
 
         ObjectMap<String, String> data = new ObjectMap<>();
@@ -28,15 +50,6 @@ public class Roles {
         ObjectMap<String, String> names = new ObjectMap<>();
         ObjectMap<String, String> admin = new ObjectMap<>();
 
-        Fi dataFile = new Fi(path);
-        if (!dataFile.exists()) {
-            File file = new File(path);
-            try {
-                file.createNewFile();
-            } catch(IOException err) {
-                Log.err("Error creating roles file", err);
-            }
-        }
         PropertiesUtils.load(data, dataFile.reader());
 
         data.forEach(entry -> {
@@ -69,5 +82,9 @@ public class Roles {
             if (role.id == id) return role;
         }
         return null;
+    }
+
+    public List<Role> all() {
+        return roles;
     }
 }

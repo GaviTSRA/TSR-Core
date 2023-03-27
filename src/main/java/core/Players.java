@@ -4,6 +4,7 @@ import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.Log;
 import arc.util.io.PropertiesUtils;
+import mindustry.gen.Groups;
 import mindustry.gen.Player;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class Players {
     private final TSRCore core;
     private final Fi playerRolesFile;
     private final ObjectMap<String, String> playerRoleIDs;
-    private final ObjectMap<String, Role> players;
+    private ObjectMap<String, Role> players;
 
     /**
      * <p>Create a new class to store all the players in the game and their roles.</p>
@@ -40,9 +41,8 @@ public class Players {
 
     /**
      * <p>Load the player ids data from the file.</p>
-     * <p>This is done automatically and only needs to be called when the file was manually changed</p>
      */
-    public void load() {
+    private void load() {
         PropertiesUtils.load(playerRoleIDs, playerRolesFile.reader());
     }
 
@@ -129,5 +129,19 @@ public class Players {
         } catch (IOException err) {
             Log.err("Error saving player roles", err);
         }
+    }
+
+    /**
+     * Reloads the data
+     */
+    public void reload() {
+        load();
+        ObjectMap<String, Role> newPlayers = new ObjectMap<>();
+        Groups.player.forEach(player -> {
+            Role role = core.roles.get(Integer.parseInt(playerRoleIDs.get(player.uuid())));
+            newPlayers.put(player.uuid(), role);
+            player.admin = role.admin;
+        });
+        players = newPlayers;
     }
 }

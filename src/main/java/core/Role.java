@@ -20,4 +20,8 @@ public class Role {
         this.name = name;
         this.admin = admin;
     }
+
+    public boolean canUseCommand(String commandName, int notFound, Commands commands) {
+        return commands.get(commandName, notFound) <= permissionLevel;
+    }
 }
