@@ -28,6 +28,7 @@ jar{
     }
 }
 
+jar.finalizedBy(publishToMavenLocal)
 
 afterEvaluate {
     publishing {
