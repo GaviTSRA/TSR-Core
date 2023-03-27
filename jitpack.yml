@@ -1,5 +1,6 @@
 jdk:
   - openjdk1.8
 install:
-  - gradle wrapper --gradle-version 7.3.3
+  - ./gradlew wrapper
+  - echo "Building..."
   - ./gradlew jar
