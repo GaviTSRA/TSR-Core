@@ -1,4 +1,5 @@
 jdk:
   - openjdk1.8
 install:
-  - gradle jar
+  - gradle wrapper
+  - ./gradlew jar
