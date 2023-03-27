@@ -1,7 +1,7 @@
-plugins {
-    id "maven-publish"
-}
+apply plugin: 'maven-publish'
 apply plugin: "java"
+
+group = 'com.github.GaviTSRA'
 
 version '1.0'
 
