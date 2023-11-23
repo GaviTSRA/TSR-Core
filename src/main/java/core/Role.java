@@ -1,10 +1,10 @@
 package core;
 
 public class Role {
-    int id;
-    int permissionLevel;
-    String name;
-    boolean admin;
+    public int id;
+    public int permissionLevel;
+    public String name;
+    public boolean admin;
 
     /**
      * <p>Creates a new role from the given parameters.</p>
