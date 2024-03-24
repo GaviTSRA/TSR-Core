@@ -95,11 +95,6 @@ public class TSRCore extends Plugin {
                 });
             });
         });
-        handler.<Player>register("test", "", "test", (args, player) -> {
-            useSelectPlayer(player, p -> {
-                player.sendMessage(p.name);
-            });
-        });
     }
     
     public void init() {
