@@ -4,7 +4,6 @@ import arc.Events;
 import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
-import mindustry.entities.EntityGroup;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Groups;
@@ -12,6 +11,7 @@ import mindustry.gen.Player;
 import mindustry.mod.Plugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -19,22 +19,23 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 0;
-    public String versionString = this.versionMajor + "." + this.versionMinor;
+    public int versionMinor = 1;
+    public int versionPath = 0;
+    public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
     public Roles roles;
     public Players players;
     public Money money;
+
     public Commands commands;
-
-    private ObjectMap<Integer, Consumer<EventType.MenuOptionChooseEvent>> menuTasks = new ObjectMap<>();
+    private ObjectMap<Integer, OptionMenu> optionMenus = new ObjectMap<>();
     private List<Role> roleList = new ArrayList<>();
+    private int lastMenuId;
 
-    //constructor (used for events)
     public TSRCore() {
         Events.on(EventType.MenuOptionChooseEvent.class, e -> {
-            if (menuTasks.containsKey(e.menuId)) {
-                menuTasks.get(e.menuId).accept(e);
+            if (optionMenus.containsKey(e.menuId)) {
+                optionMenus.get(e.menuId).run(e);
             }
         });
         Events.on(EventType.PlayerJoin.class, e -> {
@@ -71,28 +72,20 @@ public class TSRCore extends Plugin {
             }
             useSelectPlayer(player, p -> {
                 roleList = roles.all();
-                List<List<String>> buttons = new ArrayList<>();
-                List<String[]> array = new ArrayList<>();
-                int x = 3;
-                for (Role role : roleList) {
-                    x++;
-                    if (x > 3) {
-                        buttons.add(new ArrayList<>());
-                        x = 0;
-                    }
-                    buttons.get(buttons.size() - 1).add(role.name);
+                HashMap<String, String> options = new HashMap<>();
+
+                int i = 0;
+                for (Role option : roleList) {
+                    options.put(option.name, String.valueOf(i));
+                    i++;
                 }
-                for (List<String> list : buttons) {
-                    array.add(list.toArray(new String[0]));
-                }
-                Call.menu(player.con(), 2, "Choose a role", "Please choose a role to set " +
-                        p.name + "'s role to", array.toArray(new String[0][0]));
-                useMenuResponse(2, e -> {
-                    if (e.option == -1) return;
-                    players.set(p, roleList.get(e.option).id);
-                    p.sendMessage("Your role has been updated to " + roleList.get(e.option).name);
+
+                new OptionMenu("Choose a role", "Choose a role to set " + p.name + "'s role to", options, res -> {
+                    if (res == null) return;
+                    players.set(p, roleList.get(Integer.parseInt(res)).id);
+                    p.sendMessage("Your role has been updated to " + roleList.get(Integer.parseInt(res)).name);
                     players.reload();
-                });
+                }).open(player);
             });
         });
     }
@@ -120,30 +113,21 @@ public class TSRCore extends Plugin {
         return players.get(player).canUseCommand(commandName, notFound, commands);
     }
 
-    public void useMenuResponse(int menuID, Consumer<EventType.MenuOptionChooseEvent> task) {
-        menuTasks.put(menuID, task);
+    public int registerMenu(OptionMenu menu) {
+        int menuId = this.lastMenuId + 1;
+        this.lastMenuId = menuId;
+        optionMenus.put(menuId, menu);
+        return menuId;
     }
 
     public void useSelectPlayer(Player player, Consumer<Player> task) {
-        List<List<String>> buttons = new ArrayList<>();
-        List<String[]> array = new ArrayList<>();
-        int x = 3;
-        for (Player p : Groups.player){
-            x++;
-            if (x > 3) {
-                buttons.add(new ArrayList<>());
-                x = 0;
-            }
-            buttons.get(buttons.size() - 1).add(p.name);
+        HashMap<String, String> options = new HashMap<>();
+        for (Player p : Groups.player) {
+            options.put(p.name, p.name);
         }
-        for (List<String> list : buttons) {
-            array.add(list.toArray(new String[0]));
-        }
-        Call.menu(player.con(), 1, "Choose a player", "",
-                array.toArray(new String[0][0]));
-        useMenuResponse(1, e -> {
-            if (e.option == -1) return;
-            new Thread(() -> task.accept(Groups.player.find(p -> Objects.equals(p.name, Groups.player.index(e.option).name)))).start();
-        });
+        new OptionMenu("Choose a player", "", options, res -> {
+            if (res == null) return;
+            new Thread(() -> task.accept(Groups.player.find(p -> Objects.equals(p.name, res)))).start();
+        }).open(player);
     }
 }
