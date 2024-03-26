@@ -90,7 +90,6 @@ public class OptionMenu {
                 int newPage = event.option - itemsOnPage == 1 ? lastPage + 1 : lastPage - 1;
                 newPage = Math.max(0, newPage);
                 newPage = Math.min(pageCount - 1, newPage);
-                System.out.println("Opening page: " + newPage);
                 open(event.player, newPage);
             } else {
                 ArrayList<String> items = new ArrayList<>(this.options.values());
