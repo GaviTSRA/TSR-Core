@@ -32,7 +32,7 @@ public class Role {
     public boolean canUseCommand(String commandName, Commands commands) {
         int result = commands.get(commandName, 9999);
         if (result == 9999) {
-            Log.err("Command not registered: ", commandName);
+            Log.err("Command not registered: " + commandName);
         }
         return result <= permissionLevel;
     }
