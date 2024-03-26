@@ -39,4 +39,15 @@ public class Commands extends DataStorage{
     public int get(String commandName, int notFound) {
         return super.getInt(commandName, notFound);
     }
+
+    /**
+     * Register a command with its default permission level, creating the data if it doesn't already exist
+     * @param commandName Name of the command
+     * @param defaultPermissionLevel Default permission level of the command
+     */
+    public void register(String commandName, int defaultPermissionLevel) {
+        if (this.get(commandName, -1) == -1) {
+            this.set(commandName, defaultPermissionLevel);
+        }
+    }
 }

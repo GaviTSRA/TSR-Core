@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 1;
+    public int versionMinor = 2;
     public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
@@ -52,7 +52,7 @@ public class TSRCore extends Plugin {
                 (args, player) -> player.sendMessage("TSR-Core Library v"+ versionString));
         handler.<Player>register("reload", "", "Reload various files after manuel changes",
                 (args, player) -> {
-                    if (!canUseCommand(player, "reload", 1)) {
+                    if (!canUseCommand(player, "reload")) {
                         player.sendMessage("[red]No.");
                         return;
                     }
@@ -66,7 +66,7 @@ public class TSRCore extends Plugin {
                     player.sendMessage("[green]Reloaded!");
                 });
         handler.<Player>register("setperms", "", "Set the permission level of a player", (args, player) -> {
-            if (!canUseCommand(player, "setperms", 1)) {
+            if (!canUseCommand(player, "setperms")) {
                 player.sendMessage("[red]No.");
                 return;
             }
@@ -99,6 +99,9 @@ public class TSRCore extends Plugin {
         players = new Players(this, "./config/mods/tsrcore/playerRoles.properties");
         money = new Money("./config/mods/tsrcore/money.properties");
         commands = new Commands("./config/mods/tsrcore/commandPermissions.properties");
+
+        commands.register("reload", 1);
+        commands.register("setperms", 1);
     }
 
     /**
@@ -112,22 +115,20 @@ public class TSRCore extends Plugin {
      * Check if a player can use a command
      * @param uuid UUID of the player to check permissions of
      * @param commandName Command the check permissions of
-     * @param notFound Permission Level to return if the command is not found
      * @return Whether the player should be able to use the command
      */
-    public boolean canUseCommand(String uuid, String commandName, int notFound) {
-        return players.get(uuid).canUseCommand(commandName, notFound, commands);
+    public boolean canUseCommand(String uuid, String commandName) {
+        return players.get(uuid).canUseCommand(commandName, commands);
     }
 
     /**
      * Check if a player can use a command
      * @param player Player to check permissions of
      * @param commandName Command the check permissions of
-     * @param notFound Permission Level to return if the command is not found
      * @return Whether the player should be able to use the command
      */
-    public boolean canUseCommand(Player player, String commandName, int notFound) {
-        return players.get(player).canUseCommand(commandName, notFound, commands);
+    public boolean canUseCommand(Player player, String commandName) {
+        return players.get(player).canUseCommand(commandName, commands);
     }
 
     /**

@@ -1,5 +1,7 @@
 package core;
 
+import arc.util.Log;
+
 public class Role {
     public int id;
     public int permissionLevel;
@@ -24,11 +26,14 @@ public class Role {
     /**
      * Whether a command is usable by this rule
      * @param commandName The name of the command
-     * @param notFound Permission level to use if the command is not found
      * @param commands The commands data
      * @return Whether the command can be used
      */
-    public boolean canUseCommand(String commandName, int notFound, Commands commands) {
-        return commands.get(commandName, notFound) <= permissionLevel;
+    public boolean canUseCommand(String commandName, Commands commands) {
+        int result = commands.get(commandName, 9999);
+        if (result == 9999) {
+            Log.err("Command not registered: ", commandName);
+        }
+        return result <= permissionLevel;
     }
 }
