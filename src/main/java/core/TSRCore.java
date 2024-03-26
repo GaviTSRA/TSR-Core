@@ -20,7 +20,7 @@ public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
     public int versionMinor = 2;
-    public int versionPath = 0;
+    public int versionPath = 1;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
     public Roles roles;
