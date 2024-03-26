@@ -24,7 +24,7 @@ public class OptionMenu {
         this.title = title;
         this.description = description;
         this.options = options;
-        this.maxItemsPerPage = 5;
+        this.maxItemsPerPage = 6;
         this.callback = callback;
     }
     public OptionMenu(String title, String description, HashMap<String, String> options, int maxItemsPerPage, Consumer<String> callback) {
@@ -54,7 +54,7 @@ public class OptionMenu {
         this.lastPage = page;
         this.lastOffset = offset;
 
-        for (int i = 0; i < itemsOnPage; i++) {
+        for (int i = 0; i < itemsOnPage - 1; i++) {
             String item = items.get(i + offset);
             ArrayList<String> row = new ArrayList<>();
             row.add(item);
