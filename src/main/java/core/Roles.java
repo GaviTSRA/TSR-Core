@@ -40,6 +40,9 @@ public class Roles {
         load();
     }
 
+    /**
+     * Loads the roles data
+     */
     public void load() {
         Fi dataFile = new Fi(path);
         roles = new ArrayList<>();
@@ -84,6 +87,10 @@ public class Roles {
         return null;
     }
 
+    /**
+     * Get all the roles
+     * @return All loaded roles
+     */
     public List<Role> all() {
         return roles;
     }

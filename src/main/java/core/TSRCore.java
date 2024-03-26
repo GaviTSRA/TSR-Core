@@ -101,18 +101,41 @@ public class TSRCore extends Plugin {
         commands = new Commands("./config/mods/tsrcore/commandPermissions.properties");
     }
 
+    /**
+     * @return Version of the plugin as a String
+     */
     public String getVersion() {
         return versionString;
     }
 
+    /**
+     * Check if a player can use a command
+     * @param uuid UUID of the player to check permissions of
+     * @param commandName Command the check permissions of
+     * @param notFound Permission Level to return if the command is not found
+     * @return Whether the player should be able to use the command
+     */
     public boolean canUseCommand(String uuid, String commandName, int notFound) {
         return players.get(uuid).canUseCommand(commandName, notFound, commands);
     }
 
+    /**
+     * Check if a player can use a command
+     * @param player Player to check permissions of
+     * @param commandName Command the check permissions of
+     * @param notFound Permission Level to return if the command is not found
+     * @return Whether the player should be able to use the command
+     */
     public boolean canUseCommand(Player player, String commandName, int notFound) {
         return players.get(player).canUseCommand(commandName, notFound, commands);
     }
 
+    /**
+     * Used internally by the {@link OptionMenu} to listen for events.
+     * You probably never need to call this yourself.
+     * @param menu The option menu to register
+     * @return ID of the registered menu
+     */
     public int registerMenu(OptionMenu menu) {
         int menuId = this.lastMenuId + 1;
         this.lastMenuId = menuId;
@@ -120,6 +143,11 @@ public class TSRCore extends Plugin {
         return menuId;
     }
 
+    /**
+     * Make the player select another player through a menu, and execute the task with the selected player
+     * @param player Player to send the menu to
+     * @param task Code to run with the result
+     */
     public void useSelectPlayer(Player player, Consumer<Player> task) {
         HashMap<String, String> options = new HashMap<>();
         for (Player p : Groups.player) {

@@ -21,6 +21,13 @@ public class Role {
         this.admin = admin;
     }
 
+    /**
+     * Whether a command is usable by this rule
+     * @param commandName The name of the command
+     * @param notFound Permission level to use if the command is not found
+     * @param commands The commands data
+     * @return Whether the command can be used
+     */
     public boolean canUseCommand(String commandName, int notFound, Commands commands) {
         return commands.get(commandName, notFound) <= permissionLevel;
     }

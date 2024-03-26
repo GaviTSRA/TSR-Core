@@ -20,6 +20,13 @@ public class OptionMenu {
     int lastPage;
     int lastOffset;
 
+    /**
+     * Create an OptionMenu, which allows a player to select an option through a visual menu
+     * @param title Title of the menu
+     * @param description Description of the menu
+     * @param options The buttons to show in the menu
+     * @param callback Code to run with the result
+     */
     public OptionMenu(String title, String description, HashMap<String, String> options, Consumer<String> callback) {
         this.title = title;
         this.description = description;
@@ -27,6 +34,15 @@ public class OptionMenu {
         this.maxItemsPerPage = 6;
         this.callback = callback;
     }
+
+    /**
+     * Create an OptionMenu, which allows a player to select an option through a visual menu
+     * @param title Title of the menu
+     * @param description Description of the menu
+     * @param options The buttons to show in the menu
+     * @param maxItemsPerPage Max items to show per page
+     * @param callback Code to run with the result
+     */
     public OptionMenu(String title, String description, HashMap<String, String> options, int maxItemsPerPage, Consumer<String> callback) {
         this.title = title;
         this.description = description;
@@ -36,10 +52,19 @@ public class OptionMenu {
         Call.label("Hi", 100, 100, 100);
     }
 
+    /**
+     * Open the menu for a player
+     * @param player Player to open the menu for
+     */
     public void open(Player player) {
         this.open(player, 0);
     }
 
+    /**
+     * Open the menu for a player, on a specific page
+     * @param player The player to open the menu for
+     * @param page The page to open it on
+     */
     public void open(Player player, int page) {
         TSRCore tsrCore = (TSRCore) mods.list().find(m -> m.name.equals("tsrcore")).main;
         int menuId = tsrCore.registerMenu(this);
@@ -78,6 +103,10 @@ public class OptionMenu {
         Call.menu(player.con(), menuId, this.title, this.description, array.toArray(new String[0][0]));
     }
 
+    /**
+     * Called when the menu is closed. You never need to run this yourself
+     * @param event The option choose event
+     */
     public void run(EventType.MenuOptionChooseEvent event) {
         if (event.option == -1) {
             this.callback.accept(null);
