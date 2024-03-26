@@ -79,7 +79,7 @@ public class OptionMenu {
         this.lastPage = page;
         this.lastOffset = offset;
 
-        for (int i = 0; i < itemsOnPage - 1; i++) {
+        for (int i = 0; i < itemsOnPage; i++) {
             String item = items.get(i + offset);
             ArrayList<String> row = new ArrayList<>();
             row.add(item);
