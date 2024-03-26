@@ -61,12 +61,14 @@ public class OptionMenu {
             menu.add(row);
         }
 
-        ArrayList<String> row = new ArrayList<>();
-        if (page > 0) row.add("[green]\uE825");
-        else row.add("[red]\uE868");
-        if (page + 1 < pageCount) row.add("[green]\uE83A");
-        else row.add("[red]\uE868");
-        menu.add(row);
+        if (pageCount > 1) {
+            ArrayList<String> row = new ArrayList<>();
+            if (page > 0) row.add("[green]\uE825");
+            else row.add("[red]\uE868");
+            if (page + 1 < pageCount) row.add("[green]\uE83A");
+            else row.add("[red]\uE868");
+            menu.add(row);
+        }
 
         List<String[]> array = new ArrayList<>();
         for (List<String> list : menu) {
