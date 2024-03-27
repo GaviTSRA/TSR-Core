@@ -1,4 +1,4 @@
-package core;
+package tsrcore;
 
 public class Commands extends DataStorage{
     /**

@@ -1,4 +1,4 @@
-package core;
+package tsrcore;
 
 import arc.Events;
 import arc.files.Fi;
@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 2;
-    public int versionPath = 1;
+    public int versionMinor = 3;
+    public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
     public Roles roles;
@@ -47,7 +47,7 @@ public class TSRCore extends Plugin {
 
     @Override
     public void registerClientCommands(CommandHandler handler){
-        handler.<Player>register("core", "", "Info about the TSR Core Library",
+        handler.<Player>register("tsrcore", "", "Info about the TSR Core Library",
                 (args, player) -> player.sendMessage("TSR-Core Library v"+ versionString));
         handler.<Player>register("reload", "", "Reload various files after manuel changes",
                 (args, player) -> {

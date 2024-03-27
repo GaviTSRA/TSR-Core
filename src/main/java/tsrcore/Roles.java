@@ -1,4 +1,4 @@
-package core;
+package tsrcore;
 
 import arc.files.Fi;
 import arc.struct.ObjectMap;

@@ -1,4 +1,4 @@
-package core;
+package tsrcore;
 
 import mindustry.game.EventType;
 import mindustry.gen.Call;

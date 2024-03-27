@@ -1,7 +1,7 @@
 {
   "name": "tsrcore",
   "author": "GaviTSRA",
-  "main": "core.TSRCore",
+  "main": "tsrcore.TSRCore",
   "description": "TSR Core Library Plugin",
-  "version": 1.2
+  "version": 1.3
 }

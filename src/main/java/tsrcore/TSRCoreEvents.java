@@ -1,4 +1,4 @@
-package core;
+package tsrcore;
 
 import mindustry.gen.Player;
 
