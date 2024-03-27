@@ -49,7 +49,7 @@ public class TSRCore extends Plugin {
     public void registerClientCommands(CommandHandler handler){
         handler.<Player>register("tsrcore", "", "Info about the TSR Core Library",
                 (args, player) -> player.sendMessage("TSR-Core Library v"+ versionString));
-        handler.<Player>register("reload", "", "Reload various files after manuel changes",
+        handler.<Player>register("reload", "", "Reload various files after manual changes",
                 (args, player) -> {
                     if (!canUseCommand(player, "reload")) {
                         player.sendMessage("[red]No.");
