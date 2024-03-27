@@ -5,7 +5,6 @@ import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
 import mindustry.game.EventType;
-import mindustry.gen.Call;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import mindustry.mod.Plugin;
@@ -63,6 +62,9 @@ public class TSRCore extends Plugin {
                     players.reload();
                     money.load();
                     commands.load();
+
+                    Events.fire(new TSRCoreEvents.ReloadEvent());
+
                     player.sendMessage("[green]Reloaded!");
                 });
         handler.<Player>register("setperms", "", "Set the permission level of a player", (args, player) -> {
@@ -82,8 +84,10 @@ public class TSRCore extends Plugin {
 
                 new OptionMenu("Choose a role", "Choose a role to set " + p.name + "'s role to", options, res -> {
                     if (res == null) return;
-                    players.set(p, roleList.get(Integer.parseInt(res)).id);
+                    Role newRole = roleList.get(Integer.parseInt(res));
+                    players.set(p, newRole.id);
                     p.sendMessage("Your role has been updated to " + roleList.get(Integer.parseInt(res)).name);
+                    Events.fire(new TSRCoreEvents.PlayerRoleChangeEvent(p, newRole));
                     players.reload();
                 }).open(player);
             });
