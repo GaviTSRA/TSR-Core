@@ -52,7 +52,7 @@ public class TSRCore extends Plugin {
         handler.<Player>register("reload", "", "Reload various files after manual changes",
                 (args, player) -> {
                     if (!canUseCommand(player, "reload")) {
-                        player.sendMessage("[red]No.");
+                        player.sendMessage("[red]\uE815 You are not allowed to use this command.");
                         return;
                     }
                     player.sendMessage("Reloading!");
@@ -69,7 +69,7 @@ public class TSRCore extends Plugin {
                 });
         handler.<Player>register("setperms", "", "Set the permission level of a player", (args, player) -> {
             if (!canUseCommand(player, "setperms")) {
-                player.sendMessage("[red]No.");
+                player.sendMessage("[red]\uE815 You are not allowed to use this command.");
                 return;
             }
             useSelectPlayer(player, p -> {
