@@ -19,7 +19,7 @@ public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
     public int versionMinor = 3;
-    public int versionPath = 0;
+    public int versionPath = 1;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
     public Roles roles;
@@ -37,7 +37,7 @@ public class TSRCore extends Plugin {
                 optionMenus.get(e.menuId).run(e);
             }
         });
-        Events.on(EventType.PlayerJoin.class, e -> {
+        Events.on(EventType.PlayerConnect.class, e -> {
             players.add(e.player, settings.getInt("defaultRoleID", 0));
         });
         Events.on(EventType.PlayerLeave.class, e -> {
