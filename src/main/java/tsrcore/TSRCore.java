@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 3;
-    public int versionPath = 1;
+    public int versionMinor = 4;
+    public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public DataStorage settings;
     public Roles roles;
@@ -46,7 +46,7 @@ public class TSRCore extends Plugin {
     }
 
     @Override
-    public void registerClientCommands(CommandHandler handler){
+    public void registerClientCommands(CommandHandler handler) {
         handler.<Player>register("tsrcore", "", "Info about the TSR Core Library",
                 (args, player) -> player.sendMessage("TSR-Core Library v"+ versionString));
         handler.<Player>register("reload", "", "Reload various files after manual changes",

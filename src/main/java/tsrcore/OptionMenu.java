@@ -16,6 +16,7 @@ public class OptionMenu {
     String description;
     HashMap<String, String> options;
     int maxItemsPerPage;
+    int itemsPerRow;
     Consumer<String> callback;
     int lastPage;
     int lastOffset;
@@ -32,24 +33,26 @@ public class OptionMenu {
         this.description = description;
         this.options = options;
         this.maxItemsPerPage = 6;
+        this.itemsPerRow = 1;
         this.callback = callback;
     }
 
     /**
-     * Create an OptionMenu, which allows a player to select an option through a visual menu
-     * @param title Title of the menu
-     * @param description Description of the menu
-     * @param options The buttons to show in the menu
-     * @param maxItemsPerPage Max items to show per page
-     * @param callback Code to run with the result
+     * Set the max items that should be shown per page
+     * @param maxItemsPerPage Max amount of items
      */
-    public OptionMenu(String title, String description, HashMap<String, String> options, int maxItemsPerPage, Consumer<String> callback) {
-        this.title = title;
-        this.description = description;
-        this.options = options;
+    public OptionMenu maxItemsPerPage(int maxItemsPerPage) {
         this.maxItemsPerPage = maxItemsPerPage;
-        this.callback = callback;
-        Call.label("Hi", 100, 100, 100);
+        return this;
+    }
+
+    /**
+     * Set the max amount of items per row
+     * @param itemsPerRow Max amount of items per row
+     */
+    public OptionMenu itemsPerRow(int itemsPerRow) {
+        this.itemsPerRow = itemsPerRow;
+        return this;
     }
 
     /**
@@ -79,15 +82,20 @@ public class OptionMenu {
         this.lastPage = page;
         this.lastOffset = offset;
 
+        ArrayList<String> row = new ArrayList<>();
         for (int i = 0; i < itemsOnPage; i++) {
+            if (row.size() == this.itemsPerRow) {
+                menu.add(row);
+                row = new ArrayList<>();
+            }
             String item = items.get(i + offset);
-            ArrayList<String> row = new ArrayList<>();
             row.add(item);
-            menu.add(row);
         }
 
+        if (!row.isEmpty()) menu.add(row);
+
         if (pageCount > 1) {
-            ArrayList<String> row = new ArrayList<>();
+            row = new ArrayList<>();
             if (page > 0) row.add("[green]\uE825");
             else row.add("[red]\uE868");
             if (page + 1 < pageCount) row.add("[green]\uE83A");
