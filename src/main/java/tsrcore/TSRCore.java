@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 5;
+    public int versionMinor = 6;
     public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public Settings settings;

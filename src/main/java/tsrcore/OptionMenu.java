@@ -7,6 +7,7 @@ import mindustry.gen.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static mindustry.Vars.mods;
@@ -14,7 +15,7 @@ import static mindustry.Vars.mods;
 public class OptionMenu {
     String title;
     String description;
-    HashMap<String, String> options;
+    ArrayList<OptionMenuEntry> options;
     int maxItemsPerPage;
     int itemsPerRow;
     Consumer<String> callback;
@@ -31,10 +32,39 @@ public class OptionMenu {
     public OptionMenu(String title, String description, HashMap<String, String> options, Consumer<String> callback) {
         this.title = title;
         this.description = description;
+        this.options = new ArrayList<>();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            this.options.add(new OptionMenuEntry(entry.getKey(), entry.getValue()));
+        }
+        this.maxItemsPerPage = 6;
+        this.itemsPerRow = 1;
+        this.callback = callback;
+    }
+
+    /**
+     * Create an OptionMenu, which allows a player to select an option through a visual menu
+     * @param title Title of the menu
+     * @param description Description of the menu
+     * @param options The buttons to show in the menu
+     * @param callback Code to run with the result
+     */
+    public OptionMenu(String title, String description, ArrayList<OptionMenuEntry> options, Consumer<String> callback) {
+        this.title = title;
+        this.description = description;
         this.options = options;
         this.maxItemsPerPage = 6;
         this.itemsPerRow = 1;
         this.callback = callback;
+    }
+
+    public static class OptionMenuEntry {
+        public String title;
+        public String value;
+
+        public OptionMenuEntry(String title, String value) {
+            this.title = title;
+            this.value = value;
+        }
     }
 
     /**
@@ -77,7 +107,6 @@ public class OptionMenu {
         int itemsOnPage = pageCount == page + 1 ? this.options.size() % maxItemsPerPage : maxItemsPerPage;
         if (itemsOnPage == 0) itemsOnPage = maxItemsPerPage;
         int offset = page * maxItemsPerPage;
-        ArrayList<String> items = new ArrayList<>(this.options.keySet());
 
         this.lastPage = page;
         this.lastOffset = offset;
@@ -88,7 +117,7 @@ public class OptionMenu {
                 menu.add(row);
                 row = new ArrayList<>();
             }
-            String item = items.get(i + offset);
+            String item = this.options.get(i + offset).title;
             row.add(item);
         }
 
@@ -129,8 +158,7 @@ public class OptionMenu {
                 newPage = Math.min(pageCount - 1, newPage);
                 open(event.player, newPage);
             } else {
-                ArrayList<String> items = new ArrayList<>(this.options.values());
-                String result = items.get(event.option + lastOffset);
+                String result = this.options.get(event.option + lastOffset).value;
                 this.callback.accept(result);
             }
         }
