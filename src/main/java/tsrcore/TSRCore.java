@@ -18,10 +18,10 @@ import java.util.function.Consumer;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 1;
-    public int versionMinor = 4;
+    public int versionMinor = 5;
     public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
-    public DataStorage settings;
+    public Settings settings;
     public Roles roles;
     public Players players;
     public Money money;
@@ -38,7 +38,7 @@ public class TSRCore extends Plugin {
             }
         });
         Events.on(EventType.PlayerConnect.class, e -> {
-            players.add(e.player, settings.getInt("defaultRoleID", 0));
+            players.add(e.player, settings.getInt("defaultRoleID"));
         });
         Events.on(EventType.PlayerLeave.class, e -> {
             players.remove(e.player);
@@ -98,7 +98,7 @@ public class TSRCore extends Plugin {
         Fi pluginDir = new Fi("./config/mods/tsrcore");
         if (!pluginDir.exists()) pluginDir.mkdirs();
 
-        settings = new DataStorage("./config/mods/tsrcore/settings.properties");
+        settings = new Settings("./config/mods/tsrcore/settings.properties");
         roles = new Roles("./config/mods/tsrcore/roles.properties");
         players = new Players(this, "./config/mods/tsrcore/playerRoles.properties");
         money = new Money("./config/mods/tsrcore/money.properties");
@@ -106,6 +106,8 @@ public class TSRCore extends Plugin {
 
         commands.register("reload", 1);
         commands.register("setperms", 1);
+
+        settings.register("defaultRoleID", 0);
     }
 
     /**
