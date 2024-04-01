@@ -112,7 +112,9 @@ public class DataStorage {
      * @param key The name of the value
      * @return The value of the key or null if the key wasn't present in the file.
      */
-    public int getInt(String key) {
+    public Integer getInt(String key) {
+        String val = getString(key);
+        if (val == null) return null;
         return Integer.parseInt(getString(key));
     }
 
@@ -131,7 +133,9 @@ public class DataStorage {
      * @param key The name of the value
      * @return The value of the key or null if the key wasn't present in the file.
      */
-    public boolean getBool(String key) {
+    public Boolean getBool(String key) {
+        String val = getString(key);
+        if (val == null) return null;
         return Boolean.parseBoolean(getString(key));
     }
 
@@ -150,7 +154,9 @@ public class DataStorage {
      * @param key The name of the value
      * @return The value of the key or null if the key wasn't present in the file.
      */
-    public double getDouble(String key) {
+    public Double getDouble(String key) {
+        String val = getString(key);
+        if (val == null) return null;
         return Double.parseDouble(getString(key));
     }
 
