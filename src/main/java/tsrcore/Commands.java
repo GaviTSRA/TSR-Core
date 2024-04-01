@@ -1,6 +1,6 @@
 package tsrcore;
 
-public class Commands extends DataStorage{
+public class Commands extends DataStorage {
     /**
      * <p>Create a new commands object.</p>
      * <p>The file is automatically created if it is not present.</p>
@@ -12,23 +12,23 @@ public class Commands extends DataStorage{
     }
 
     /**
-     * <p>Reload the data from the file.</p>
-     * <p>This is only required if the file was changed manually.</p>
-     */
-    public void load() {
-        super.load();
-    }
-
-
-    /**
      * Set the permission level of a command
      * @param commandName The commands name
      * @param permissionLevel The level to set to
      */
     public void set(String commandName, int permissionLevel) {
-        super.setInt(commandName, permissionLevel);
+        super.set(commandName, permissionLevel);
     }
 
+
+    /**
+     * <p>Get a string value from the settings</p>
+     * @param commandName The name of the command
+     * @return The permission level of the command or null if the command wasn't found
+     */
+    public int get(String commandName) {
+        return super.getInt(commandName);
+    }
 
     /**
      * <p>Get a string value from the settings</p>

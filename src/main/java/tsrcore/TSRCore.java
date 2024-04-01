@@ -27,7 +27,7 @@ public class TSRCore extends Plugin {
     public Money money;
 
     public Commands commands;
-    private ObjectMap<Integer, OptionMenu> optionMenus = new ObjectMap<>();
+    private final ObjectMap<Integer, OptionMenu> optionMenus = new ObjectMap<>();
     private List<Role> roleList = new ArrayList<>();
     private int lastMenuId;
 
@@ -98,7 +98,7 @@ public class TSRCore extends Plugin {
         Fi pluginDir = new Fi("./config/mods/tsrcore");
         if (!pluginDir.exists()) pluginDir.mkdirs();
 
-        settings = new DataStorage("./config/mods/tsrcore/config.properties");
+        settings = new DataStorage("./config/mods/tsrcore/settings.properties");
         roles = new Roles("./config/mods/tsrcore/roles.properties");
         players = new Players(this, "./config/mods/tsrcore/playerRoles.properties");
         money = new Money("./config/mods/tsrcore/money.properties");

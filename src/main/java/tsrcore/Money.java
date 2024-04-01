@@ -13,20 +13,12 @@ public class Money extends DataStorage{
     }
 
     /**
-     * <p>Load the data from the file.</p>
-     * <p>This is done automatically and only required to call if the file is modified manually.</p>
-     */
-    public void load() {
-        super.load();
-    }
-
-    /**
      * Set the money of a player by his uuid
      * @param uuid The uuid of the player
      * @param amount The amount to set to
      */
     public void set(String uuid, int amount) {
-        super.setInt(uuid, amount);
+        super.set(uuid, amount);
     }
 
     /**

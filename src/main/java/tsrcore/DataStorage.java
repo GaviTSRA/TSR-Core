@@ -24,7 +24,9 @@ public class DataStorage {
         if (!storageFile.exists()) {
             File file = new File(path);
             try {
-                file.createNewFile();
+                boolean created = file.createNewFile();
+                if (created)
+                    Log.info("Created DataStorage file: " + path);
             } catch(IOException err) {
                 Log.err("Error creating data storage file " + storageFile.name(), err);
             }
@@ -33,11 +35,11 @@ public class DataStorage {
     }
 
     /**
-     * <p>Set a value using a key value pair, where the value is a string.</p>
+     * <p>Set a value using a key value pair</p>
      * @param key The name of the value to set
      * @param value The value to set it to
      */
-    public void setString(String key, String value) {
+    public void set(String key, String value) {
         storage.put(key, value);
         try {
             PropertiesUtils.store(storage, storageFile.writer(false), "");
@@ -47,21 +49,30 @@ public class DataStorage {
     }
 
     /**
-     * <p>Set a value using a key value pair, where the value is an int.</p>
+     * <p>Set a value using a key value pair</p>
      * @param key The name of the value to set
      * @param value The value to set it to
      */
-    public void setInt(String key, int value) {
-        setString(key, String.valueOf(value));
+    public void set(String key, int value) {
+        set(key, String.valueOf(value));
     }
 
     /**
-     * <p>Set a value using a key value pair, where the value is a boolean.</p>
+     * <p>Set a value using a key value pair</p>
      * @param key The name of the value to set
      * @param value The value to set it to
      */
-    public void setBool(String key, boolean value) {
-        setString(key, String.valueOf(value));
+    public void set(String key, boolean value) {
+        set(key, String.valueOf(value));
+    }
+
+    /**
+     * <p>Set a value using a key value pair</p>
+     * @param key The name of the value to set
+     * @param value The value to set it to
+     */
+    public void set(String key, double value) {
+        set(key, String.valueOf(value));
     }
 
     /**
@@ -75,16 +86,34 @@ public class DataStorage {
     /**
      * <p>Get a string value from the storage</p>
      * @param key The name of the value
+     * @return The value of the key or null if the key wasn't present in the file.
+     */
+    public String getString(String key) {
+        return storage.get(key);
+    }
+
+    /**
+     * <p>Get a string value from the storage</p>
+     * @param key The name of the value
      * @param notFound The value to use if the key is not found. This is returned and saved.
      * @return The value of the key or the not found value if the key wasn't present in the file.
      */
     public String getString(String key, String notFound) {
         String result = storage.get(key);
         if (result == null) {
-            setString(key, notFound);
+            set(key, notFound);
             return notFound;
         }
         return result;
+    }
+
+    /**
+     * <p>Get a int value from the storage</p>
+     * @param key The name of the value
+     * @return The value of the key or null if the key wasn't present in the file.
+     */
+    public int getInt(String key) {
+        return Integer.parseInt(getString(key));
     }
 
     /**
@@ -100,11 +129,29 @@ public class DataStorage {
     /**
      * <p>Get a bool value from the storage</p>
      * @param key The name of the value
+     * @return The value of the key or null if the key wasn't present in the file.
+     */
+    public boolean getBool(String key) {
+        return Boolean.parseBoolean(getString(key));
+    }
+
+    /**
+     * <p>Get a bool value from the storage</p>
+     * @param key The name of the value
      * @param notFound The value to use if the key is not found. This is returned and saved.
      * @return The value of the key or the not found value if the key wasn't present in the file.
      */
     public boolean getBool(String key, boolean notFound) {
         return Boolean.parseBoolean(getString(key, String.valueOf(notFound)));
+    }
+
+    /**
+     * <p>Get a double value from the storage</p>
+     * @param key The name of the value
+     * @return The value of the key or null if the key wasn't present in the file.
+     */
+    public double getDouble(String key) {
+        return Double.parseDouble(getString(key));
     }
 
     /**
