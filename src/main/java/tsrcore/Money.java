@@ -2,7 +2,7 @@ package tsrcore;
 
 import mindustry.gen.Player;
 
-public class Money extends DataStorage{
+public class Money extends DataStorage {
     /**
      * <p>>Create a new object storing the money each player has.</p>
      * <p>The file is created and loaded automatically.</p>

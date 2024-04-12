@@ -2,7 +2,7 @@ apply plugin: "java"
 apply plugin: 'maven-publish'
 
 group = 'com.github.GaviTSRA'
-version '1.0'
+version '2.0'
 
 sourceCompatibility = 1.8
 
@@ -18,9 +18,10 @@ ext{
 
 dependencies{
     compileOnly "com.github.anuken.arc:arc-core:$mindustryVersion"
-    compileOnly("com.github.anuken.mindustry:core:$mindustryVersion" ) {
+    compileOnly("com.github.anuken.mindustry:core:$mindustryVersion") {
         exclude group: "com.github.Anuken.Arc"
     }
+    implementation 'mysql:mysql-connector-java:8.0.28'
 }
 
 jar{

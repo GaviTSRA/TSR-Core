@@ -1,19 +1,11 @@
 package tsrcore;
 
-import arc.files.Fi;
 import arc.struct.ObjectMap;
-import arc.util.Log;
-import arc.util.io.PropertiesUtils;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
 
-import java.io.File;
-import java.io.IOException;
-
 public class Players {
     private final TSRCore core;
-    private final Fi playerRolesFile;
-    private final ObjectMap<String, String> playerRoleIDs;
     private ObjectMap<String, Role> players;
 
     /**
@@ -21,29 +13,10 @@ public class Players {
      * <p>The file is automatically created if it doesn't exist.</p>
      * <p>The data is automatically loaded.</p>
      * @param core An instance of the TSRCore class
-     * @param playerRolesFilePath The path to the file storing the player roles
      */
-    public Players(TSRCore core, String playerRolesFilePath) {
+    public Players(TSRCore core) {
         this.core = core;
-        playerRoleIDs = new ObjectMap<>();
         players = new ObjectMap<>();
-        playerRolesFile = new Fi(playerRolesFilePath);
-        if (!playerRolesFile.exists()) {
-            File file = new File(playerRolesFilePath);
-            try {
-                file.createNewFile();
-            } catch(IOException err) {
-                Log.err("Error creating player roles file", err);
-            }
-        }
-        load();
-    }
-
-    /**
-     * <p>Load the player ids data from the file.</p>
-     */
-    private void load() {
-        PropertiesUtils.load(playerRoleIDs, playerRolesFile.reader());
     }
 
     /**
@@ -53,7 +26,7 @@ public class Players {
      * @param defaultRoleID The default role id
      */
     public void add(Player player, int defaultRoleID) {
-        String id = playerRoleIDs.get(player.uuid());
+        String id = core.playerRoles.getString(player.uuid());
         if (id == null) {
             set(player, defaultRoleID);
             id = String.valueOf(defaultRoleID);
@@ -123,22 +96,16 @@ public class Players {
      * @param id The id of the {@link Role}
      */
     public void set(String uuid, int id) {
-        playerRoleIDs.put(uuid, String.valueOf(id));
-        try {
-            PropertiesUtils.store(playerRoleIDs, playerRolesFile.writer(false), "");
-        } catch (IOException err) {
-            Log.err("Error saving player roles", err);
-        }
+        core.playerRoles.set(uuid, String.valueOf(id));
     }
 
     /**
      * Reloads the data
      */
     public void reload() {
-        load();
         ObjectMap<String, Role> newPlayers = new ObjectMap<>();
         Groups.player.forEach(player -> {
-            Role role = core.roles.get(Integer.parseInt(playerRoleIDs.get(player.uuid())));
+            Role role = core.roles.get(core.playerRoles.getInt(player.uuid()));
             newPlayers.put(player.uuid(), role);
             player.admin = role.admin;
         });

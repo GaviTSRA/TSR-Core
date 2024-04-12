@@ -4,6 +4,7 @@ import arc.Events;
 import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
+import arc.util.Timer;
 import mindustry.game.EventType;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
@@ -17,13 +18,15 @@ import java.util.function.Consumer;
 
 public class TSRCore extends Plugin {
 
-    public int versionMajor = 1;
-    public int versionMinor = 6;
+    public int versionMajor = 2;
+    public int versionMinor = 0;
     public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
+    public Database database;
     public Settings settings;
     public Roles roles;
     public Players players;
+    public DataStorage playerRoles;
     public Money money;
 
     public Commands commands;
@@ -38,9 +41,12 @@ public class TSRCore extends Plugin {
             }
         });
         Events.on(EventType.PlayerConnect.class, e -> {
+            if (database != null)
+                database.playerJoin(e.player.uuid());
             players.add(e.player, settings.getInt("defaultRoleID"));
         });
         Events.on(EventType.PlayerLeave.class, e -> {
+            database.save(e.player);
             players.remove(e.player);
         });
     }
@@ -99,15 +105,31 @@ public class TSRCore extends Plugin {
         if (!pluginDir.exists()) pluginDir.mkdirs();
 
         settings = new Settings("./config/mods/tsrcore/settings.properties");
+        playerRoles = new DataStorage("./config/mods/tsrcore/playerRoles.properties");
         roles = new Roles("./config/mods/tsrcore/roles.properties");
-        players = new Players(this, "./config/mods/tsrcore/playerRoles.properties");
-        money = new Money("./config/mods/tsrcore/money.properties");
         commands = new Commands("./config/mods/tsrcore/commandPermissions.properties");
+        money = new Money("./config/mods/tsrcore/money.properties");
+        players = new Players(this);
+
+        database = new Database(settings.getString("dbConnectString"));
+
+        if (settings.getBool("useDB") != null && settings.getBool("useDB")) {
+            database.connect();
+        }
+
+        database.addPlayerFieldInt("role", playerRoles, settings.getInt("defaultRoleID"));
+        database.addPlayerFieldInt("money", money, 0);
 
         commands.register("reload", 1);
         commands.register("setperms", 1);
 
         settings.register("defaultRoleID", 0);
+        settings.register("useDB", false);
+        settings.register("dbConnectString", "");
+
+        Timer.schedule(() -> {
+            database.save();
+        }, 0, 60);
     }
 
     /**
