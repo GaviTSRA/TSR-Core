@@ -88,6 +88,7 @@ public class Database {
      * @param defaultValue The default value if a player has no data stored in the db
      */
     public void addPlayerFieldString(String name, DataStorage storage, String defaultValue) {
+        if (connection == null) return;
         storages.put(new StorageEntry(name, "string", defaultValue), storage);
         if (hasColumn(name)) return;
         update("ALTER TABLE players ADD COLUMN "+name+" TEXT");
@@ -100,6 +101,7 @@ public class Database {
      * @param defaultValue The default value if a player has no data stored in the db
      */
     public void addPlayerFieldInt(String name, DataStorage storage, int defaultValue) {
+        if (connection == null) return;
         storages.put(new StorageEntry(name, "int", String.valueOf(defaultValue)), storage);
         if (hasColumn(name)) return;
         update("ALTER TABLE players ADD COLUMN "+name+" INT");
@@ -112,6 +114,7 @@ public class Database {
      * @param defaultValue The default value if a player has no data stored in the db
      */
     public void addPlayerFieldBool(String name, DataStorage storage, boolean defaultValue) {
+        if (connection == null) return;
         storages.put(new StorageEntry(name, "bool", String.valueOf(defaultValue)), storage);
         if (hasColumn(name)) return;
         update("ALTER TABLE players ADD COLUMN "+name+" TINYINT(1)");
@@ -124,6 +127,7 @@ public class Database {
      * @param defaultValue The default value if a player has no data stored in the db
      */
     public void addPlayerFieldDouble(String name, DataStorage storage, double defaultValue) {
+        if (connection == null) return;
         storages.put(new StorageEntry(name, "double", String.valueOf(defaultValue)), storage);
         if (hasColumn(name)) return;
         update("ALTER TABLE players ADD COLUMN "+name+" DOUBLE");
