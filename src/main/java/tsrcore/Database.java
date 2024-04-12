@@ -54,7 +54,6 @@ public class Database {
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
-            Log.info(query);
             statement.close();
         } catch (SQLException e) {
             Log.err("SQL Update failed: " + e);
@@ -64,7 +63,6 @@ public class Database {
     private ResultSet query(String query) {
         try {
             Statement statement = connection.createStatement();
-            Log.info(query);
             return statement.executeQuery(query);
         } catch (SQLException e) {
             Log.err("SQL Query failed: " + e);
@@ -154,7 +152,6 @@ public class Database {
                         values.append("'");
                 }
 
-                Log.info("New player!");
                 update("INSERT INTO players (" + names + ") VALUES (" + values + ")");
 
                 for (Map.Entry<StorageEntry, DataStorage> entries : storages.entrySet()) {
