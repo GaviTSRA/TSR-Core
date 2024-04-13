@@ -33,7 +33,8 @@ public class Players {
         }
         Role role = core.roles.get(Integer.parseInt(id));
         players.put(player.uuid(), role);
-        if (role.admin) player.admin = true;
+        if (!core.notVerified.contains(player))
+            if (role.admin) player.admin = true;
     }
 
     /**

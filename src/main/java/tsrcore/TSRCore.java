@@ -48,8 +48,11 @@ public class TSRCore extends Plugin {
         Events.on(EventType.PlayerConnect.class, e -> {
             if (settings.getBool("useDB"))
                 database.playerJoin(e.player.uuid());
-            if (Objects.equals(ips.getString(e.player.uuid(), "null"), "null")) {
+            if (Objects.equals(ips.getString(e.player.uuid(), ""), "")) {
                 ips.set(e.player.uuid(), e.player.ip());
+            }
+            if (Objects.equals(passwords.getString(e.player.uuid(), ""), "")) {
+                Call.infoMessage(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
             }
             if (!Objects.equals(ips.getString(e.player.uuid()), e.player.ip())) {
                 ArrayList<String> allowed = new ArrayList<>(Arrays.asList(allowedIps.getString(e.player.uuid()).split(",")));
@@ -93,7 +96,7 @@ public class TSRCore extends Plugin {
             player.sendMessage("[green]Reloaded!");
         });
         handler.<Player>register("register", "<password> <repeat-password>", "Register your acccount with a password. Required to save user data", (args, player) -> {
-            if (passwords.getString(player.uuid()) != null && !Objects.equals(passwords.getString(player.uuid()), "")) {
+            if (!Objects.equals(passwords.getString(player.uuid(), ""), "")) {
                 player.sendMessage("[red]\uE815 This account is already registered");
                 return;
             }
@@ -104,6 +107,7 @@ public class TSRCore extends Plugin {
 
             //String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
             passwords.set(player.uuid(), args[0]);
+            player.sendMessage("[green]\uE800 Registered!");
         });
         handler.<Player>register("login", "<password>", "Allow a new ip for your account", (args, player) -> {
             if (Objects.equals(passwords.getString(player.uuid(), ""), "")) {
