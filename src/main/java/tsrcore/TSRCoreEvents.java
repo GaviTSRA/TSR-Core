@@ -15,4 +15,13 @@ public class TSRCoreEvents {
             this.newRole = newRole;
         }
     }
+
+    /** Fired when a players ip is verified */
+    public static class PlayerVerifyEvent {
+        public final Player player;
+
+        public PlayerVerifyEvent(Player player) {
+                this.player = player;
+        }
+    }
 }

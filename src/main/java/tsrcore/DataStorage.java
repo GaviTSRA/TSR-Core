@@ -40,6 +40,10 @@ public class DataStorage {
      * @param value The value to set it to
      */
     public void set(String key, String value) {
+        if (value == null) {
+            storage.put(key, "");
+            return;
+        }
         storage.put(key, value);
         try {
             PropertiesUtils.store(storage, storageFile.writer(false), "");
