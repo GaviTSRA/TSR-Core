@@ -229,13 +229,13 @@ public class Database {
                 i++;
                 DataStorage storage = entry.getValue();
                 if (Objects.equals(entry.getKey().type, "string"))
-                    statement.setString(i, storage.getString(uuid));
+                    statement.setString(i, storage.getString(uuid, entry.getKey().defaultValue));
                 if (Objects.equals(entry.getKey().type, "int"))
-                    statement.setInt(i, storage.getInt(uuid));
+                    statement.setInt(i, storage.getInt(uuid, Integer.parseInt(entry.getKey().defaultValue)));
                 if (Objects.equals(entry.getKey().type, "double"))
-                    statement.setDouble(i, storage.getDouble(uuid));
+                    statement.setDouble(i, storage.getDouble(uuid, Double.parseDouble(entry.getKey().defaultValue)));
                 if (Objects.equals(entry.getKey().type, "bool"))
-                    statement.setBoolean(i, storage.getBool(uuid));
+                    statement.setBoolean(i, storage.getBool(uuid, Boolean.parseBoolean(entry.getKey().defaultValue)));
             }
             statement.executeUpdate();
             statement.close();
