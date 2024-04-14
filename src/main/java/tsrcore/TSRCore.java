@@ -123,8 +123,7 @@ public class TSRCore extends Plugin {
                 return;
             }
 
-            String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
-            if (BCrypt.verifyer().verify(passwords.getString(player.uuid()).toCharArray(), bcryptHashString).verified) {
+            if (BCrypt.verifyer().verify(args[0].toCharArray(), passwords.getString(player.uuid()).toCharArray()).verified) {
                 player.sendMessage("[green]\uE800 Logged in!");
                 allowed.add(player.ip());
                 allowedIps.set(player.uuid(), allowed.stream().map(Object::toString).collect(Collectors.joining(",")));
