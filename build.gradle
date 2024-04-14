@@ -1,12 +1,17 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
 apply plugin: "java"
 apply plugin: 'maven-publish'
 
 group = 'com.github.GaviTSRA'
-version '3.0'
+version '3.1'
 
 sourceCompatibility = 1.8
 
 repositories{
+    gradlePluginPortal()
     mavenCentral()
     maven{ url 'https://www.jitpack.io' }
 }
@@ -16,8 +21,8 @@ ext {
     mindustryVersion = 'v146'
 }
 
-dependencies{
-    //implementation "at.favre.lib:bcrypt:0.10.2"
+dependencies {
+    shadow "at.favre.lib:bcrypt:0.10.2"
     compileOnly "com.github.anuken.arc:arc-core:$mindustryVersion"
     compileOnly("com.github.anuken.mindustry:core:$mindustryVersion") {
         exclude group: "com.github.Anuken.Arc"

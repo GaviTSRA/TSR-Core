@@ -6,7 +6,7 @@ import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
 import arc.util.Log;
 import arc.util.Timer;
-//import at.favre.lib.crypto.bcrypt.BCrypt;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Groups;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 3;
-    public int versionMinor = 0;
+    public int versionMinor = 1;
     public int versionPath = 0;
     public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
     public Database database;
@@ -67,7 +67,8 @@ public class TSRCore extends Plugin {
             Events.fire(new TSRCoreEvents.PlayerVerifyEvent(e.player));
         });
         Events.on(EventType.PlayerLeave.class, e -> {
-            database.save(e.player);
+            if (settings.getBool("useDB"))
+                database.save(e.player);
             players.remove(e.player);
             notVerified.remove(e.player);
         });
@@ -96,6 +97,7 @@ public class TSRCore extends Plugin {
             player.sendMessage("[green]Reloaded!");
         });
         handler.<Player>register("register", "<password> <repeat-password>", "Register your acccount with a password. Required to save user data", (args, player) -> {
+            if (notVerified.contains(player)) return;
             if (!Objects.equals(passwords.getString(player.uuid(), ""), "")) {
                 player.sendMessage("[red]\uE815 This account is already registered");
                 return;
@@ -105,8 +107,8 @@ public class TSRCore extends Plugin {
                 return;
             }
 
-            //String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
-            passwords.set(player.uuid(), args[0]);
+            String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
+            passwords.set(player.uuid(), bcryptHashString);
             player.sendMessage("[green]\uE800 Registered!");
         });
         handler.<Player>register("login", "<password>", "Allow a new ip for your account", (args, player) -> {
@@ -121,9 +123,8 @@ public class TSRCore extends Plugin {
                 return;
             }
 
-            //String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
-            //if (BCrypt.verifyer().verify(passwords.getString(player.uuid()).toCharArray(), bcryptHashString).verified) {
-            if (Objects.equals(passwords.getString(player.uuid()), args[0])) {
+            String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
+            if (BCrypt.verifyer().verify(passwords.getString(player.uuid()).toCharArray(), bcryptHashString).verified) {
                 player.sendMessage("[green]\uE800 Logged in!");
                 allowed.add(player.ip());
                 allowedIps.set(player.uuid(), allowed.stream().map(Object::toString).collect(Collectors.joining(",")));

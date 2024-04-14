@@ -71,6 +71,7 @@ public class Database {
     }
 
     private boolean hasColumn(String name) {
+        // TODO gets stuck only in prod for some reason
         try {
             Log.info("Checking for column "+name);
             DatabaseMetaData metaData = connection.getMetaData();
@@ -79,7 +80,7 @@ public class Database {
             Log.info("a");
             return res.next();
         } catch (SQLException e) {
-            Log.err("SQL Exception: e");
+            Log.err("SQL Exception 1: " + e);
             return false;
         }
     }
@@ -147,22 +148,32 @@ public class Database {
         try {
             if (!res.isBeforeFirst()) {
                 StringBuilder names = new StringBuilder("uuid");
-                StringBuilder values = new StringBuilder("'" + uuid + "'");
+                StringBuilder values = new StringBuilder(uuid);
 
-                for (Map.Entry<StorageEntry, DataStorage> entries : storages.entrySet()) {
-                    names.append(",").append(entries.getKey().name);
-                    values.append(",");
-                    if (Objects.equals(entries.getKey().type, "string"))
-                        values.append("'");
-                    values.append(entries.getKey().defaultValue);
-                    if (Objects.equals(entries.getKey().type, "string"))
-                        values.append("'");
+                for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
+                    names.append(",").append(entry.getKey().name);
+                    values.append(",").append("?");
                 }
 
-                update("INSERT INTO players (" + names + ") VALUES (" + values + ")");
+                String query = "INSERT INTO players (" + names + ") VALUES (" + values + ")";
+                PreparedStatement statement = connection.prepareStatement(query);
+                int i = 0;
+                for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
+                    i++;
+                    if (Objects.equals(entry.getKey().type, "string"))
+                        statement.setString(i, entry.getKey().defaultValue);
+                    if (Objects.equals(entry.getKey().type, "int"))
+                        statement.setInt(i, Integer.parseInt(entry.getKey().defaultValue));
+                    if (Objects.equals(entry.getKey().type, "double"))
+                        statement.setDouble(i, Double.parseDouble(entry.getKey().defaultValue));
+                    if (Objects.equals(entry.getKey().type, "bool"))
+                        statement.setBoolean(i, Boolean.parseBoolean(entry.getKey().defaultValue));
+                }
+                statement.executeUpdate();
+                statement.close();
 
-                for (Map.Entry<StorageEntry, DataStorage> entries : storages.entrySet()) {
-                    entries.getValue().set(uuid, entries.getKey().defaultValue);
+                for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
+                    entry.getValue().set(uuid, entry.getKey().defaultValue);
                 }
 
                 return;
@@ -184,7 +195,7 @@ public class Database {
 
             res.close();
         } catch (SQLException e) {
-            Log.err("SQL Error: " );
+            Log.err("SQL Exception 2: " );
             e.printStackTrace();
         }
     }
@@ -201,28 +212,36 @@ public class Database {
      * @param player The player to sync the data of
      */
     public void save(Player player) {
-        String uuid = player.uuid();
-        StringBuilder update = new StringBuilder();
+        try {
+            String uuid = player.uuid();
+            StringBuilder update = new StringBuilder();
 
-        for (Map.Entry<StorageEntry, DataStorage> entries : storages.entrySet()) {
-            if (!update.toString().isEmpty())
-                update.append(",");
-            update.append(entries.getKey().name).append(" = ");
-            DataStorage storage = entries.getValue();
-
-            String type = entries.getKey().type;
-            if (Objects.equals(type, "string")) {
-                update.append("'").append(storage.getString(uuid)).append("'");
-            } else if (Objects.equals(type, "int")) {
-                update.append(storage.getInt(uuid));
-            } else if (Objects.equals(type, "bool")) {
-                update.append(storage.getBool(uuid));
-            } else if (Objects.equals(type, "double")) {
-                update.append(storage.getDouble(uuid));
+            for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
+                if (!update.toString().isEmpty())
+                    update.append(",");
+                update.append(entry.getKey().name).append(" = ?");
             }
-        }
 
-        update("UPDATE players SET "+update+" WHERE uuid = '"+uuid+"'");
+            String query = "UPDATE players SET " + update + " WHERE uuid = '" + uuid + "'";
+            PreparedStatement statement = connection.prepareStatement(query);
+            int i = 0;
+            for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
+                i++;
+                DataStorage storage = entry.getValue();
+                if (Objects.equals(entry.getKey().type, "string"))
+                    statement.setString(i, storage.getString(uuid));
+                if (Objects.equals(entry.getKey().type, "int"))
+                    statement.setInt(i, storage.getInt(uuid));
+                if (Objects.equals(entry.getKey().type, "double"))
+                    statement.setDouble(i, storage.getDouble(uuid));
+                if (Objects.equals(entry.getKey().type, "bool"))
+                    statement.setBoolean(i, storage.getBool(uuid));
+            }
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            Log.err("SQL Exception 3: " + e);
+        }
     }
 
     private static class StorageEntry {
