@@ -4,7 +4,6 @@ import arc.Events;
 import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
-import arc.util.Log;
 import arc.util.Timer;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import mindustry.game.EventType;
@@ -53,6 +52,8 @@ public class TSRCore extends Plugin {
             }
             if (Objects.equals(passwords.getString(e.player.uuid(), ""), "")) {
                 Call.infoToast(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register", 10);
+                Call.infoMessage(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
+                e.player.sendMessage("[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
             }
             if (!Objects.equals(ips.getString(e.player.uuid()), e.player.ip())) {
                 ArrayList<String> allowed = new ArrayList<>(Arrays.asList(allowedIps.getString(e.player.uuid()).split(",")));
@@ -76,9 +77,7 @@ public class TSRCore extends Plugin {
 
     @Override
     public void registerClientCommands(CommandHandler handler) {
-        handler.<Player>register("tsrcore", "", "Info about the TSR Core Library", (args, player) -> {
-            player.sendMessage("TSR-Core Library v"+ versionString);
-        });
+        handler.<Player>register("tsrcore", "", "Info about the TSR Core Library", (args, player) -> player.sendMessage("TSR-Core Library v"+ versionString));
         handler.<Player>register("reload", "", "Reload various files after manual changes", (args, player) -> {
             if (!canUseCommand(player, "reload")) {
                 player.sendMessage("[red]\uE815 You are not allowed to use this command.");
@@ -96,7 +95,7 @@ public class TSRCore extends Plugin {
 
             player.sendMessage("[green]Reloaded!");
         });
-        handler.<Player>register("register", "<password> <repeat-password>", "Register your acccount with a password. Required to save user data", (args, player) -> {
+        handler.<Player>register("register", "<password> <repeat-password>", "Register your account with a password. Required to save user data", (args, player) -> {
             if (notVerified.contains(player)) return;
             if (!Objects.equals(passwords.getString(player.uuid(), ""), "")) {
                 player.sendMessage("[red]\uE815 This account is already registered");
