@@ -52,7 +52,7 @@ public class TSRCore extends Plugin {
                 ips.set(e.player.uuid(), e.player.ip());
             }
             if (Objects.equals(passwords.getString(e.player.uuid(), ""), "")) {
-                Call.infoMessage(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
+                Call.infoToast(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register", 10);
             }
             if (!Objects.equals(ips.getString(e.player.uuid()), e.player.ip())) {
                 ArrayList<String> allowed = new ArrayList<>(Arrays.asList(allowedIps.getString(e.player.uuid()).split(",")));
