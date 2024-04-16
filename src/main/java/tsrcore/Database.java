@@ -148,7 +148,7 @@ public class Database {
         try {
             if (!res.isBeforeFirst()) {
                 StringBuilder names = new StringBuilder("uuid");
-                StringBuilder values = new StringBuilder(uuid);
+                StringBuilder values = new StringBuilder("'"+uuid+"'");
 
                 for (Map.Entry<StorageEntry, DataStorage> entry : storages.entrySet()) {
                     names.append(",").append(entry.getKey().name);
