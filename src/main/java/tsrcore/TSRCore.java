@@ -47,21 +47,19 @@ public class TSRCore extends Plugin {
         Events.on(EventType.PlayerConnect.class, e -> {
             if (settings.getBool("useDB"))
                 database.playerJoin(e.player.uuid());
-            if (Objects.equals(ips.getString(e.player.uuid(), ""), "")) {
-                ips.set(e.player.uuid(), e.player.ip());
-            }
             if (Objects.equals(passwords.getString(e.player.uuid(), ""), "")) {
-                Call.infoToast(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register", 10);
-                Call.infoMessage(e.player.con(), "[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
-                e.player.sendMessage("[red]You have not registered. If your ip changes, you will not be able to log back in. Register now with /register");
-            }
-            if (!Objects.equals(ips.getString(e.player.uuid()), e.player.ip())) {
-                ArrayList<String> allowed = new ArrayList<>(Arrays.asList(allowedIps.getString(e.player.uuid()).split(",")));
-                if (!allowed.contains(e.player.ip())) {
-                    Call.infoMessage(e.player.con(), "Your IP has changed. /login now to verify the new IP");
-                    notVerified.add(e.player);
-                    players.add(e.player, settings.getInt("defaultRoleID"));
-                    return;
+                Call.infoToast(e.player.con(), "[red]You have not registered. Register now with /register to prevent your account from being stolen", 10);
+                Call.infoMessage(e.player.con(), "[red]You have not registered. Register now with /register to prevent your account from being stolen");
+                e.player.sendMessage("[red]You have not registered. Register now with /register to prevent your account from being stolen");
+            } else {
+                if (!Objects.equals(ips.getString(e.player.uuid()), e.player.ip())) {
+                    ArrayList<String> allowed = new ArrayList<>(Arrays.asList(allowedIps.getString(e.player.uuid(), "").split(",")));
+                    if (!allowed.contains(e.player.ip())) {
+                        Call.infoMessage(e.player.con(), "Your IP has changed. /login now to verify the new IP");
+                        notVerified.add(e.player);
+                        players.add(e.player, settings.getInt("defaultRoleID"));
+                        return;
+                    }
                 }
             }
             players.add(e.player, settings.getInt("defaultRoleID"));
@@ -96,7 +94,6 @@ public class TSRCore extends Plugin {
             player.sendMessage("[green]Reloaded!");
         });
         handler.<Player>register("register", "<password> <repeat-password>", "Register your account with a password. Required to save user data", (args, player) -> {
-            if (notVerified.contains(player)) return;
             if (!Objects.equals(passwords.getString(player.uuid(), ""), "")) {
                 player.sendMessage("[red]\uE815 This account is already registered");
                 return;
@@ -106,6 +103,7 @@ public class TSRCore extends Plugin {
                 return;
             }
 
+            ips.set(player.uuid(), player.ip());
             String bcryptHashString = BCrypt.withDefaults().hashToString(12, args[0].toCharArray());
             passwords.set(player.uuid(), bcryptHashString);
             player.sendMessage("[green]\uE800 Registered!");
@@ -138,6 +136,11 @@ public class TSRCore extends Plugin {
                 return;
             }
             useSelectPlayer(player, p -> {
+                if (!Objects.equals(passwords.getString(p.uuid(), ""), "")) {
+                    player.sendMessage("[red]\uE815 Cannot set perms of not registered player.");
+                    return;
+                }
+
                 roleList = roles.all();
                 HashMap<String, String> options = new HashMap<>();
 
