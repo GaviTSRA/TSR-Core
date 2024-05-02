@@ -136,7 +136,7 @@ public class TSRCore extends Plugin {
                 return;
             }
             useSelectPlayer(player, p -> {
-                if (!Objects.equals(passwords.getString(p.uuid(), ""), "")) {
+                if (Objects.equals(passwords.getString(p.uuid(), ""), "")) {
                     player.sendMessage("[red]\uE815 Cannot set perms of not registered player.");
                     return;
                 }
