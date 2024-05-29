@@ -39,6 +39,15 @@ public class TSRCore extends Plugin {
     private int lastMenuId;
 
     public TSRCore() {
+        Events.on(TSRCoreEvents.ReloadEvent.class, e -> {
+            if (!settings.getBool("useDB")) {
+                money.load();
+            }
+            settings.load();
+            roles.load();
+            players.reload();
+            commands.load();
+        });
         Events.on(EventType.MenuOptionChooseEvent.class, e -> {
             if (optionMenus.containsKey(e.menuId)) {
                 optionMenus.get(e.menuId).run(e);
@@ -82,12 +91,6 @@ public class TSRCore extends Plugin {
                 return;
             }
             player.sendMessage("Reloading!");
-
-            settings.load();
-            roles.load();
-            players.reload();
-            money.load();
-            commands.load();
 
             Events.fire(new TSRCoreEvents.ReloadEvent());
 
