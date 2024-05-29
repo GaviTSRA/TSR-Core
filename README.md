@@ -29,6 +29,8 @@ public void init() {
 # Features
 - [Roles and Permissions](#roles-and-permissions)
 - [Settings API](#settings-api)
+- [Money](#money)
+- [TSR Core Events](#tsr-core-events)
 - [Data Storages](#data-storages)
 - [Option Menus](#option-menus)
 - [Player Accounts](#player-accounts)
@@ -86,6 +88,23 @@ To access the setting somewhere else in your plugin you can use the `tsrCore.set
 tsrCore.settings.getString("discordInvite")
 ```
 
+## Money
+TSRCore also provides a utility DataStorage to handle an in-game currency, that can be shared between multiple plugins.
+You can use it with the these methodsd:
+```java
+tsrCore.money.set(player, 5);
+tsrCore.money.add(player, 1);
+tsrCore.money.remove(player, 2);
+tsrCore.money.get(player); // 4
+```
+
+## TSR Core Events
+TSRCore provides 3 events that can be used by your plugin.
+- The PlayerVerifyEvent is fired when a player passes verification, either on join with a known ip or after logging in.
+- The ReloadEvent is fired when the /reload command is used and should be used to reload your DataStorages from file using their load method. You should only reload DB synced DataStorages if the useDB setting is disabled!
+- The PlayerRoleChangeEvent is fired when a players role is updated using /setperms
+
+
 ## Data Storages
 Data Storages are TSR Cores way of storing data and are used internally for things like player roles, settings or command permissions.
 They can also be used by plugins using TSR Core, however.
@@ -106,10 +125,46 @@ xp.set(p.uuid(), 10);
 ```
 
 ## Option Menus
-TODO
+TSR Core provides an API to let other plugins let players choose an option from a menu. These menu can have any options you like and automatically create pages for 
+your options. These pages can have a variable amount of items and columns.
+Here is an example of how to use OptionMenus:
+```java
+// Options to be used in the menu
+HashMap<String, String> options = new HashMap<>();
+// Key is shown to the player, value is returned when clicked
+options.put("One Option", "a");
+options.put("Another Option", "b");
+options.put("More Options", "c");
+
+// Create the menu and register the callback 
+// res is either the value of the provided map or null if the menu is closed using escape
+OptionMenu menu = new OptionMenu("Menu title", "Menu description", options, res -> {
+    ...
+});
+menu.maxItemsPerPage(6);
+menu.itemsPerRow(2);
+menu.open(player);
+```
+TSRCore also provides a utility function to create a menu to choose a player:
+```java
+// player is the player that gets the menu, p is the selected player
+tsrCore.useSelectPlayer(player, p ->{
+    ...
+}
+```
 
 ## Player Accounts
-TODO
+TSRCore adds player accounts to your server to prevent people from using stolen uuids to get access to other peoples accounts (like mods).
+When a player joins, they will be prompted to register, which is not required but recommended.  After a player has registered with a password, 
+their account is safe. If someone tries to log in with their uuid from another ip, they won't get access to commands. If it is the actual player,
+he can just log in using /login and the ip will be whitelisted. You cannot change the permissions of a player that is not registered.
 
 ## Database Syncing
-TODO
+TSRCore provides an easy way to sync your data to a MySQL database, including player accounts and roles.
+To enable syncing, set the `useDB` setting to `true` and the `dbConnectString` to your JDBC connection string.
+
+To sync your own DataStorages, just register them in your init function: 
+```java
+// Register the xp DataStorage to be synced to the xp column with a default value of 0
+tsrCore.database.addPlayerFieldInt("xp", xp, 0);
+```
