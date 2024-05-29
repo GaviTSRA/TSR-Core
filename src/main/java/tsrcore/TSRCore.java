@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public class TSRCore extends Plugin {
 
     public int versionMajor = 3;
-    public int versionMinor = 1;
-    public int versionPath = 0;
-    public String versionString = versionMajor + "." + versionMinor + "." + versionPath;
+    public int versionMinor = 2;
+    public int versionPatch = 0;
+    public String versionString = versionMajor + "." + versionMinor + "." + versionPatch;
     public Database database;
     public Settings settings;
     public Roles roles;
@@ -138,7 +138,7 @@ public class TSRCore extends Plugin {
                 player.sendMessage("[red]\uE815 You are not allowed to use this command.");
                 return;
             }
-            useSelectPlayer(player, p -> {
+            selectPlayer(player, p -> {
                 if (Objects.equals(passwords.getString(p.uuid(), ""), "")) {
                     player.sendMessage("[red]\uE815 Cannot set perms of not registered player.");
                     return;
@@ -239,7 +239,7 @@ public class TSRCore extends Plugin {
      * @param player Player to send the menu to
      * @param task Code to run with the result
      */
-    public void useSelectPlayer(Player player, Consumer<Player> task) {
+    public void selectPlayer(Player player, Consumer<Player> task) {
         HashMap<String, String> options = new HashMap<>();
         for (Player p : Groups.player) {
             options.put(p.name, p.name);
