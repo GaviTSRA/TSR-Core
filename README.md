@@ -90,7 +90,7 @@ tsrCore.settings.getString("discordInvite")
 
 ## Money
 TSRCore also provides a utility DataStorage to handle an in-game currency, that can be shared between multiple plugins.
-You can use it with the these methodsd:
+You can use it with the these methods:
 ```java
 tsrCore.money.set(player, 5);
 tsrCore.money.add(player, 1);
