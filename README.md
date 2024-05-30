@@ -33,6 +33,7 @@ public void init() {
 - [TSR Core Events](#tsr-core-events)
 - [Data Storages](#data-storages)
 - [Option Menus](#option-menus)
+- [Text Inputs](#text-inputs)
 - [Player Accounts](#player-accounts)
 - [Database Syncing](#database-syncing)
 
@@ -151,6 +152,22 @@ TSRCore also provides a utility function to create a menu to choose a player:
 tsrCore.useSelectPlayer(player, p ->{
     ...
 }
+```
+
+## Text Inputs
+Text inputs allow your plugin to get a text from a player from a popup.
+```java
+tsrCore.textInput(
+    player,
+    "Input something", // Title
+    "Here:", // Description
+    20, // Max characters
+    "Your input here", // Placeholder
+    false, // Numeric
+    res -> {
+        ...    
+    }
+)
 ```
 
 ## Player Accounts
