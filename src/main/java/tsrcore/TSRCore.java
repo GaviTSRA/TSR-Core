@@ -1,20 +1,30 @@
 package tsrcore;
 
+import arc.Core;
 import arc.Events;
 import arc.files.Fi;
 import arc.struct.ObjectMap;
 import arc.util.CommandHandler;
+import arc.util.Log;
+import arc.util.Threads;
 import arc.util.Timer;
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import mindustry.Vars;
+import mindustry.core.GameState;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Groups;
 import mindustry.gen.Player;
+import mindustry.io.SaveIO;
 import mindustry.mod.Plugin;
+import mindustry.net.Packets;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static mindustry.Vars.saveDirectory;
+import static mindustry.Vars.saveExtension;
 
 public class TSRCore extends Plugin {
 
@@ -37,8 +47,33 @@ public class TSRCore extends Plugin {
     private final ObjectMap<Integer, OptionMenu> optionMenus = new ObjectMap<>();
     private List<Role> roleList = new ArrayList<>();
     private int lastMenuId;
+    private int lastTextInputId;
+    private final ObjectMap<Integer, Consumer<String>> textInputs = new ObjectMap<>();
 
     public TSRCore() {
+        Events.on(EventType.ServerLoadEvent.class, e -> {
+            if (settings.getBool("rebooting")) {
+                settings.set("rebooting", false);
+
+                Fi file = saveDirectory.child("TSRCoreRebootSave." + saveExtension);
+                Core.app.post(() -> {
+                    try{
+                        SaveIO.load(file);
+                        Vars.state.rules.sector = null;
+                        Vars.state.set(GameState.State.playing);
+                        Vars.netServer.openServer();
+                        Core.settings.put("startCommands", settings.getString("startCommandsBackup"));
+                    } catch (Throwable t) {
+                        Log.err("Failed to load save. Outdated or corrupt file.");
+                    }
+                });
+            }
+        });
+        Events.on(EventType.TextInputEvent.class, e -> {
+            if (textInputs.containsKey(e.textInputId)) {
+                textInputs.get(e.textInputId).accept(e.text);
+            }
+        });
         Events.on(TSRCoreEvents.ReloadEvent.class, e -> {
             if (!settings.getBool("useDB")) {
                 money.load();
@@ -133,6 +168,21 @@ public class TSRCore extends Plugin {
                 player.sendMessage("[red]\uE815 Invalid password");
             }
         });
+        handler.<Player>register("reboot", "Reboot the server", (args, player) -> {
+            if (!canUseCommand(player, "reboot")) {
+                player.sendMessage("[red]\uE815 You are not allowed to use this command.");
+                return;
+            }
+            Core.app.post(() -> {
+                Fi file = saveDirectory.child("TSRCoreRebootSave." + saveExtension);
+                SaveIO.save(file);
+                settings.set("rebooting", true);
+                settings.set("startCommandsBackup", Core.settings.getString("startCommands"));
+                Core.settings.put("startCommands", "");
+                Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+                Threads.throwAppException(new java.lang.Exception("Restarting..."));
+            });
+        });
         handler.<Player>register("setperms", "", "Set the permission level of a player", (args, player) -> {
             if (!canUseCommand(player, "setperms")) {
                 player.sendMessage("[red]\uE815 You are not allowed to use this command.");
@@ -194,6 +244,7 @@ public class TSRCore extends Plugin {
 
         commands.register("reload", 1);
         commands.register("setperms", 1);
+        commands.register("reboot", 1);
 
         settings.register("defaultRoleID", 0);
         settings.register("useDB", false);
@@ -248,5 +299,20 @@ public class TSRCore extends Plugin {
             if (res == null) return;
             new Thread(() -> task.accept(Groups.player.find(p -> Objects.equals(p.name, res)))).start();
         }).open(player);
+    }
+
+    /**
+     * Get text input from a player
+     * @param player The player to get the input from
+     * @param title The title of the input menu
+     * @param description The description of the input menu
+     * @param maxCharCount The max amount of characters a player can enter
+     * @param numeric If the input is numeric only
+     * @param task The function to execute with the result
+     */
+    public void textInput(Player player, String title, String description, int maxCharCount, String placeholder, boolean numeric, Consumer<String> task) {
+        lastTextInputId += 1;
+        textInputs.put(lastTextInputId, task);
+        Call.textInput(player.con(), lastTextInputId, title, description, maxCharCount, placeholder, numeric);
     }
 }
