@@ -52,7 +52,7 @@ public class TSRCore extends Plugin {
 
     public TSRCore() {
         Events.on(EventType.ServerLoadEvent.class, e -> {
-            if (settings.getBool("rebooting")) {
+            if (settings.getBool("rebooting", false)) {
                 settings.set("rebooting", false);
 
                 Fi file = saveDirectory.child("TSRCoreRebootSave." + saveExtension);
